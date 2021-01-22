@@ -12,11 +12,13 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.compasso.uol.gabriel.entity.Client;
 import com.compasso.uol.gabriel.repository.ClientRepository;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class ClientServiceTest {
 
 	@MockBean
