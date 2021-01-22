@@ -8,9 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.compasso.uol.gabriel.entity.City;
 
 public interface CityRepository extends JpaRepository<City, Long> {
-
-	@Transactional(readOnly = true)
-	Optional<City> findById(Long id);
 	
 	@Transactional(readOnly = true)
 	Optional<City> findByName(String name);

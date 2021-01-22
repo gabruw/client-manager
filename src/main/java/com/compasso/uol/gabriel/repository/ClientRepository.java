@@ -10,8 +10,5 @@ import com.compasso.uol.gabriel.entity.Client;
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
 	@Transactional(readOnly = true)
-	Optional<Client> findById(Long id);
-
-	@Transactional(readOnly = true)
 	Optional<Client> findByName(String name);
 }
