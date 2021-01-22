@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,8 +48,9 @@ public class CityController {
 	@Autowired
 	private CityService cityService;
 
+	@Cacheable("city")
 	@GetMapping("/find-options")
-	public ResponseEntity<Response<List<OptionDTO<Long>>>> findName() throws NoSuchAlgorithmException {
+	public ResponseEntity<Response<List<OptionDTO<Long>>>> findOptions() throws NoSuchAlgorithmException {
 		log.info("Buscando as opções de cidades.");
 		Response<List<OptionDTO<Long>>> response = new Response<List<OptionDTO<Long>>>();
 
@@ -58,6 +60,7 @@ public class CityController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Cacheable("city")
 	@GetMapping("/find-name")
 	public ResponseEntity<Response<City>> findName(@RequestParam("name") String name) throws NoSuchAlgorithmException {
 		log.info("Buscando a cidade com o nome: {}", name);
@@ -70,11 +73,13 @@ public class CityController {
 
 			return ResponseEntity.badRequest().body(response);
 		}
-
+		cityOpt.get().setClients(Collections.emptyList());
+		
 		response.setData(cityOpt.get());
 		return ResponseEntity.ok(response);
 	}
 
+	@Cacheable("city")
 	@GetMapping("/find-state")
 	public ResponseEntity<Response<City>> findState(@RequestParam("state") String state)
 			throws NoSuchAlgorithmException {
@@ -88,6 +93,7 @@ public class CityController {
 
 			return ResponseEntity.badRequest().body(response);
 		}
+		cityOpt.get().setClients(Collections.emptyList());
 
 		response.setData(cityOpt.get());
 		return ResponseEntity.ok(response);

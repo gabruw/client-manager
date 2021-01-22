@@ -25,7 +25,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public Optional<Authentication> findById(Long id) {
+	public Optional<Authentication> findById(Long id)  {
 		log.info("Buscando uma autenticação pelo Id: {}", id);
 		return this.authenticationRepository.findById(id);
 	}

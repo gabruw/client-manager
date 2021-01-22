@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
@@ -57,6 +58,7 @@ public class ClientController {
 	@Autowired
 	private AuthenticationService authenticationService;
 
+	@Cacheable("client")
 	@GetMapping("/find-id")
 	public ResponseEntity<Response<Client>> findId(@RequestParam("id") Long id) throws NoSuchAlgorithmException {
 		log.info("Buscando o cliente com o Id: {}", id);
@@ -69,12 +71,14 @@ public class ClientController {
 
 			return ResponseEntity.badRequest().body(response);
 		}
+		clientOpt.get().setCity(null);
 		clientOpt.get().setAuthentication(null);
-
+		
 		response.setData(clientOpt.get());
 		return ResponseEntity.ok(response);
 	}
 
+	@Cacheable("client")
 	@GetMapping("/find-name")
 	public ResponseEntity<Response<Client>> findName(@RequestParam("name") String name)
 			throws NoSuchAlgorithmException {
