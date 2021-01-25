@@ -13,6 +13,11 @@ Está aplicação segue as especificações do escopo que pode ser econtrado atr
 - [X] Lombok
 - [X] Model Mapper
 
+## Teste
+- [X] JUnit 5
+- [X] Mockito
+- [X] PITest
+
 ## Segurança
 - [X] JWT
 - [X] Spring Security
@@ -30,3 +35,10 @@ Foram adicionados três ambientes:
 - Developer (dev);
 - Production (prod);
 - Quality (test);
+
+### Teste de Mutação
+
+O teste de mutação pode ser executado com o comando:
+```sh
+mvn org.pitest:pitest-maven:mutationCoverage
+```
