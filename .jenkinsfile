@@ -1,12 +1,17 @@
 pipeline {
     agent any
     stages {
-        stage ('[Backend] - Build') {
+        stage ('Build') {
             steps {
                 bat 'mvn clean package -DskipTests=true'
             }
         }
-        stage ('[Backend] - Sonar Analysis') {
+        stage ('Test') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+        stage ('Sonar Analysis') {
             environment {
                 scannerHome = tool 'SONAR_SCANNER'
             }
@@ -17,7 +22,7 @@ pipeline {
                 
             }
         }
-        stage ('[Backend] - Deploy') {
+        stage ('Deploy') {
             steps {
 				deploy adapters: [tomcat8(credentialsId: 'tomcat_credentials', path: '', url: 'http://localhost:8080/')], contextPath: 'enade', war: 'target/client-manager-0.0.1.war'
             }
