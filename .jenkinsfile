@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    stages {
+        stage ('[Backend] - Build') {
+            steps {
+                bat 'mvn clean package -DskipTests=true'
+            }
+        }
+        stage ('[Backend] - Sonar Analysis') {
+            environment {
+                scannerHome = tool 'SONAR_SCANNER'
+            }
+            steps {
+                withSonarQubeEnv('SONAR_LOCAL'){
+                    bat "${scannerHome}/bin/sonar-scanner -e -Dsonar.projectKey=client-manager-backend -Dsonar.host.url=http://localhost:9000 -Dsonar.login=1d8ee17899908559ae81f38c96e5e73e6c7235b6 -Dsonar.java.binaries=target -Dsonar.coverage.exclusions=**/.mvn/**,**/src/test/**,**/model/**,**Application.java"
+                }
+                
+            }
+        }
+        stage ('[Backend] - Deploy') {
+            steps {
+				deploy adapters: [tomcat8(credentialsId: 'tomcat_credentials', path: '', url: 'http://localhost:8080/')], contextPath: 'enade', war: 'target/client-manager-0.0.1.war'
+            }
+        }
+    }
+}
