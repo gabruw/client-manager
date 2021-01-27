@@ -30,7 +30,6 @@ import com.compasso.uol.gabriel.dto.OptionDTO;
 import com.compasso.uol.gabriel.dto.ReturnCityDTO;
 import com.compasso.uol.gabriel.entity.City;
 import com.compasso.uol.gabriel.enumerator.message.CityMessage;
-import com.compasso.uol.gabriel.enumerator.message.GenericMessage;
 import com.compasso.uol.gabriel.response.Response;
 import com.compasso.uol.gabriel.service.CityService;
 import com.compasso.uol.gabriel.utils.Messages;
@@ -163,7 +162,7 @@ public class CityController {
 		Optional<City> cityOpt = this.cityService.findById(id);
 		if (!cityOpt.isPresent()) {
 			log.info("A autenticação não foi encontrada para o nome: {}", id);
-			response.addError(Messages.getClient(GenericMessage.NONEXISTENT.toString(), id));
+			response.addError(Messages.getClient(CityMessage.NONEXISTENT.toString()));
 
 			return ResponseEntity.badRequest().body(response);
 		}

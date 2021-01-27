@@ -33,7 +33,6 @@ import com.compasso.uol.gabriel.entity.Client;
 import com.compasso.uol.gabriel.enumerator.message.AuthenticationMessage;
 import com.compasso.uol.gabriel.enumerator.message.CityMessage;
 import com.compasso.uol.gabriel.enumerator.message.ClientMessage;
-import com.compasso.uol.gabriel.enumerator.message.GenericMessage;
 import com.compasso.uol.gabriel.response.Response;
 import com.compasso.uol.gabriel.service.AuthenticationService;
 import com.compasso.uol.gabriel.service.CityService;
@@ -205,7 +204,7 @@ public class ClientController {
 		auth.setClient(client);
 		this.authenticationService.persistir(auth);
 		client.getCity().setClients(null);
-		
+
 		response.setData(client);
 		return ResponseEntity.ok(response);
 	}
@@ -218,7 +217,7 @@ public class ClientController {
 		Optional<Client> clientOpt = this.clientService.findById(id);
 		if (!clientOpt.isPresent()) {
 			log.info("O cliente não foi encontrado para o Id: {}", id);
-			response.addError(Messages.getClient(GenericMessage.NONEXISTENT.toString(), id));
+			response.addError(Messages.getClient(ClientMessage.NONEXISTENT.toString()));
 
 			return ResponseEntity.badRequest().body(response);
 		}

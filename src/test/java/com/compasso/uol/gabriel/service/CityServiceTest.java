@@ -1,19 +1,24 @@
 package com.compasso.uol.gabriel.service;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.compasso.uol.gabriel.dto.OptionDTO;
+import com.compasso.uol.gabriel.dto.ReturnCityDTO;
 import com.compasso.uol.gabriel.entity.City;
 import com.compasso.uol.gabriel.repository.CityRepository;
 
@@ -27,40 +32,79 @@ public class CityServiceTest {
 	@Autowired
 	private CityService cityService;
 
+	@Mock
+	private City city;
+
 	private static final Long ID = 1L;
 	private static final String NAME = "Juiz de Fora";
 	private static final String STATE = "Minas Gerais";
 
 	@BeforeEach
-	public void init() throws Exception {
-		when(this.cityRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new City()));
-		when(this.cityRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(new City()));
-		when(this.cityRepository.findByState(Mockito.anyString())).thenReturn(Optional.of(new City()));
-
-		when(this.cityRepository.save(Mockito.any(City.class))).thenReturn(new City());
+	public void setup() {
+		city = new City();
+		city.setName(NAME);
+		city.setState(STATE);
 	}
 
 	@Test
-	public void findCityById() {
-		Optional<City> city = this.cityService.findById(ID);
-		assertTrue(city.isPresent());
+	public void findAll() {
+		List<City> cities = new ArrayList<City>();
+		cities.add(city);
+
+		when(this.cityRepository.findAll()).thenReturn(cities);
+
+		List<ReturnCityDTO> options = this.cityService.findAll();
+		Assertions.assertTrue(options.size() == 1);
 	}
 
 	@Test
-	public void findCityByName() {
-		Optional<City> city = this.cityService.findByName(NAME);
-		assertTrue(city.isPresent());
+	public void findById() {
+		when(this.cityRepository.findById(ID)).thenReturn(Optional.of(city));
+
+		Optional<City> tCity = this.cityService.findById(ID);
+		Assertions.assertTrue(tCity.isPresent());
 	}
 
 	@Test
-	public void findCityByState() {
-		Optional<City> city = this.cityService.findByState(STATE);
-		assertTrue(city.isPresent());
+	public void findByName() {
+		when(this.cityRepository.findByName(NAME)).thenReturn(Optional.of(city));
+
+		Optional<City> tCity = this.cityService.findByName(NAME);
+		Assertions.assertTrue(tCity.isPresent());
 	}
 
 	@Test
-	public void presistCity() {
-		City city = this.cityService.persistir(new City());
-		assertNotNull(city);
+	public void findByState() {
+		when(this.cityRepository.findByState(STATE)).thenReturn(Optional.of(city));
+
+		Optional<City> tCity = this.cityService.findByState(STATE);
+		Assertions.assertTrue(tCity.isPresent());
+	}
+
+	@Test
+	public void findOptions() {
+		List<City> cities = new ArrayList<City>();
+		cities.add(city);
+
+		when(this.cityRepository.findAll()).thenReturn(cities);
+
+		List<OptionDTO<Long>> options = this.cityService.findOptions();
+		Assertions.assertTrue(options.size() == 1);
+	}
+
+	@Test
+	public void persist() {
+		when(this.cityRepository.save(city)).thenReturn(city);
+
+		City tCity = this.cityService.persistir(city);
+		Assertions.assertEquals(tCity, city);
+	}
+
+	@Test
+	public void delete() {
+		when(this.cityRepository.findById(ID)).thenReturn(Optional.of(city));
+
+		this.cityService.deleteById(ID);
+		verify(this.cityRepository, times(1)).deleteById(ID);
 	}
 }

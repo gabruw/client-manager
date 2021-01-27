@@ -156,30 +156,38 @@
 						<version>0.12</version>
 					</dependency>
 				</dependencies>
+
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <version>1.6.2</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.7.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<version>1.6.2</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+				<configuration>
+					<excludedTestClasses>
+						<excludedTestClass>com.compasso.uol.gabriel</excludedTestClass>
+						<excludedTestClass>com.compasso.uol.gabriel.config</excludedTestClass>
+						<excludedTestClass>com.compasso.uol.gabriel.security.*</excludedTestClass>
+					</excludedTestClasses>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

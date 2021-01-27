@@ -1,20 +1,26 @@
 package com.compasso.uol.gabriel.service;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.compasso.uol.gabriel.dto.ReturnClientDTO;
 import com.compasso.uol.gabriel.entity.Client;
+import com.compasso.uol.gabriel.enumerator.GenderEnum;
 import com.compasso.uol.gabriel.repository.ClientRepository;
 
 @SpringBootTest
@@ -27,32 +33,62 @@ public class ClientServiceTest {
 	@Autowired
 	private ClientService clientService;
 
+	@Mock
+	private Client client;
+
 	private static final Long ID = 1L;
+	private static final Date BIRTH = new Date();
 	private static final String NAME = "Genisvaldo";
+	private static final GenderEnum GENDER = GenderEnum.MALE;
 
 	@BeforeEach
-	public void init() throws Exception {
-		when(this.clientRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new Client()));
-		when(this.clientRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(new Client()));
-
-		when(this.clientRepository.save(Mockito.any(Client.class))).thenReturn(new Client());
+	public void setup() {
+		client = new Client();
+		client.setName(NAME);
+		client.setGender(GENDER);
+		client.setBirth(BIRTH);
 	}
 
 	@Test
-	public void findClientById() {
-		Optional<Client> client = this.clientService.findById(ID);
-		assertTrue(client.isPresent());
+	public void findAll() {
+		List<Client> clients = new ArrayList<Client>();
+		clients.add(client);
+
+		when(this.clientRepository.findAll()).thenReturn(clients);
+
+		List<ReturnClientDTO> options = this.clientService.findAll();
+		Assertions.assertTrue(options.size() == 1);
 	}
 
 	@Test
-	public void findClientByName() {
-		Optional<Client> client = this.clientService.findByName(NAME);
-		assertTrue(client.isPresent());
+	public void findById() {
+		when(this.clientRepository.findById(ID)).thenReturn(Optional.of(client));
+
+		Optional<Client> tClient = this.clientService.findById(ID);
+		Assertions.assertTrue(tClient.isPresent());
 	}
 
 	@Test
-	public void presistClient() {
-		Client client = this.clientService.persistir(new Client());
-		assertNotNull(client);
+	public void findByName() {
+		when(this.clientRepository.findByName(NAME)).thenReturn(Optional.of(client));
+
+		Optional<Client> tClient = this.clientService.findByName(NAME);
+		Assertions.assertTrue(tClient.isPresent());
+	}
+
+	@Test
+	public void persist() {
+		when(this.clientRepository.save(client)).thenReturn(client);
+
+		Client tClient = this.clientService.persistir(client);
+		Assertions.assertEquals(tClient, client);
+	}
+
+	@Test
+	public void delete() {
+		when(this.clientRepository.findById(ID)).thenReturn(Optional.of(client));
+
+		clientService.deleteById(ID);
+		verify(clientRepository, times(1)).deleteById(ID);
 	}
 }
