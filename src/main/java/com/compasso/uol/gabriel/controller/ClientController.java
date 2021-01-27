@@ -1,6 +1,7 @@
 package com.compasso.uol.gabriel.controller;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -15,15 +16,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.compasso.uol.gabriel.dto.RegisterClientDTO;
+import com.compasso.uol.gabriel.dto.ReturnClientDTO;
 import com.compasso.uol.gabriel.dto.UpdateClientDTO;
 import com.compasso.uol.gabriel.entity.Authentication;
 import com.compasso.uol.gabriel.entity.City;
@@ -58,11 +60,23 @@ public class ClientController {
 	@Autowired
 	private AuthenticationService authenticationService;
 
+	@GetMapping
 	@Cacheable("client")
-	@GetMapping("/find-id")
-	public ResponseEntity<Response<Client>> findId(@RequestParam("id") Long id) throws NoSuchAlgorithmException {
+	public ResponseEntity<Response<List<ReturnClientDTO>>> findAll() throws NoSuchAlgorithmException {
+		log.info("Buscando todas as cidades.");
+		Response<List<ReturnClientDTO>> response = new Response<List<ReturnClientDTO>>();
+
+		List<ReturnClientDTO> clients = clientService.findAll();
+		response.setData(clients);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@Cacheable("client")
+	@RequestMapping(params = "id", method = RequestMethod.GET)
+	public ResponseEntity<Response<ReturnClientDTO>> findId(@RequestParam Long id) throws NoSuchAlgorithmException {
 		log.info("Buscando o cliente com o Id: {}", id);
-		Response<Client> response = new Response<Client>();
+		Response<ReturnClientDTO> response = new Response<ReturnClientDTO>();
 
 		Optional<Client> clientOpt = clientService.findById(id);
 		if (!clientOpt.isPresent()) {
@@ -71,19 +85,19 @@ public class ClientController {
 
 			return ResponseEntity.badRequest().body(response);
 		}
-		clientOpt.get().setCity(null);
-		clientOpt.get().setAuthentication(null);
-		
-		response.setData(clientOpt.get());
+
+		ReturnClientDTO client = mapper.map(clientOpt.get(), ReturnClientDTO.class);
+		response.setData(client);
+
 		return ResponseEntity.ok(response);
 	}
 
 	@Cacheable("client")
-	@GetMapping("/find-name")
-	public ResponseEntity<Response<Client>> findName(@RequestParam("name") String name)
+	@RequestMapping(params = "name", method = RequestMethod.GET)
+	public ResponseEntity<Response<ReturnClientDTO>> findName(@RequestParam String name)
 			throws NoSuchAlgorithmException {
 		log.info("Buscando o cliente com o nome: {}", name);
-		Response<Client> response = new Response<Client>();
+		Response<ReturnClientDTO> response = new Response<ReturnClientDTO>();
 
 		Optional<Client> clientOpt = clientService.findByName(name);
 		if (!clientOpt.isPresent()) {
@@ -92,13 +106,14 @@ public class ClientController {
 
 			return ResponseEntity.badRequest().body(response);
 		}
-		clientOpt.get().setAuthentication(null);
 
-		response.setData(clientOpt.get());
+		ReturnClientDTO client = mapper.map(clientOpt.get(), ReturnClientDTO.class);
+		response.setData(client);
+
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping("/include")
+	@PostMapping
 	public ResponseEntity<Response<RegisterClientDTO>> include(@Valid @RequestBody RegisterClientDTO registerDTO,
 			BindingResult result) throws NoSuchAlgorithmException {
 		log.info("Incluindo o cliente: {}", registerDTO.toString());
@@ -120,9 +135,9 @@ public class ClientController {
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		Optional<City> cityOpt = this.cityService.findById(registerDTO.getCity().getId());
+		Optional<City> cityOpt = this.cityService.findById(registerDTO.getClient().getCity().getId());
 		if (!cityOpt.isPresent()) {
-			log.error("Erro ao validar o Id: {}", registerDTO.getCity().getId());
+			log.error("Erro ao validar o Id: {}", registerDTO.getClient().getCity().getId());
 			response.addError(Messages.getCity(CityMessage.NONEXISTENT.toString()));
 
 			return ResponseEntity.badRequest().body(response);
@@ -143,7 +158,7 @@ public class ClientController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PutMapping("/edit")
+	@PutMapping
 	public ResponseEntity<Response<Client>> edit(@Valid @RequestBody UpdateClientDTO updateDTO, BindingResult result)
 			throws NoSuchAlgorithmException {
 		log.info("Editando o cliente: {}", updateDTO.getClient().toString());
@@ -166,15 +181,15 @@ public class ClientController {
 
 		Optional<Client> clientOpt = this.clientService.findById(updateDTO.getClient().getId());
 		if (!clientOpt.isPresent()) {
-			log.error("Erro ao validar o Id do cliente: {}", updateDTO.getCity().getId());
+			log.error("Erro ao validar o Id do cliente: {}", updateDTO.getClient().getId());
 			response.addError(Messages.getClient(ClientMessage.NONEXISTENT.toString()));
 
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		Optional<City> cityOpt = this.cityService.findById(updateDTO.getCity().getId());
+		Optional<City> cityOpt = this.cityService.findById(updateDTO.getClient().getCity().getId());
 		if (!cityOpt.isPresent()) {
-			log.error("Erro ao validar o Id da cidade: {}", updateDTO.getCity().getId());
+			log.error("Erro ao validar o Id da cidade: {}", updateDTO.getClient().getCity().getId());
 			response.addError(Messages.getCity(CityMessage.NONEXISTENT.toString()));
 
 			return ResponseEntity.badRequest().body(response);
@@ -189,13 +204,14 @@ public class ClientController {
 
 		auth.setClient(client);
 		this.authenticationService.persistir(auth);
-
+		client.getCity().setClients(null);
+		
 		response.setData(client);
 		return ResponseEntity.ok(response);
 	}
 
-	@DeleteMapping("/remove/{id}")
-	public ResponseEntity<Response<Client>> remove(@PathVariable("id") Long id) throws NoSuchAlgorithmException {
+	@DeleteMapping
+	public ResponseEntity<Response<Client>> remove(@RequestParam("id") Long id) throws NoSuchAlgorithmException {
 		log.info("Removendo o cliente: {}", id);
 		Response<Client> response = new Response<Client>();
 

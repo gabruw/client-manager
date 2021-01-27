@@ -61,7 +61,7 @@ public class AuthenticationController {
 	@Autowired
 	private AuthenticationService authenticationService;
 
-	@PostMapping("/login")
+	@PostMapping
 	public ResponseEntity<Response<CreateTokenDTO>> login(@Valid @RequestBody LoginDTO loginDTO, BindingResult result)
 			throws NoSuchAlgorithmException {
 		log.info("Iniciando busca da autenticação: {}", loginDTO.toString());
@@ -112,7 +112,7 @@ public class AuthenticationController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/refresh")
+	@GetMapping
 	public ResponseEntity<Response<RefreshTokenDTO>> refresh(HttpServletRequest request) {
 		log.info("Regerando token.");
 		Response<RefreshTokenDTO> response = new Response<RefreshTokenDTO>();

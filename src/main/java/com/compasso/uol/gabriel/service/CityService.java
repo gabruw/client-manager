@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.compasso.uol.gabriel.dto.OptionDTO;
+import com.compasso.uol.gabriel.dto.ReturnCityDTO;
 import com.compasso.uol.gabriel.entity.City;
 
 public interface CityService {
-	void deleteById(Long id);
+	List<ReturnCityDTO> findAll();
 
 	Optional<City> findById(Long id);
 
@@ -18,4 +19,6 @@ public interface CityService {
 	List<OptionDTO<Long>> findOptions();
 
 	City persistir(City city);
+
+	void deleteById(Long id);
 }
