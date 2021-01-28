@@ -156,7 +156,33 @@
 						<version>0.12</version>
 					</dependency>
 				</dependencies>
+				<configuration>
+					<excludedTestClasses>
+						<excludedTestClass>com.compasso.uol.gabriel</excludedTestClass>
+						<excludedTestClass>com.compasso.uol.gabriel.config</excludedTestClass>
+					</excludedTestClasses>
+				</configuration>
+			</plugin>
 
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.6</version>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-repor</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -180,13 +206,6 @@
 						</reports>
 					</reportSet>
 				</reportSets>
-				<configuration>
-					<excludedTestClasses>
-						<excludedTestClass>com.compasso.uol.gabriel</excludedTestClass>
-						<excludedTestClass>com.compasso.uol.gabriel.config</excludedTestClass>
-						<excludedTestClass>com.compasso.uol.gabriel.security.*</excludedTestClass>
-					</excludedTestClasses>
-				</configuration>
 			</plugin>
 		</plugins>
 	</reporting>
