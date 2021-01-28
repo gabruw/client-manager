@@ -67,7 +67,7 @@ public class CityServiceImpl implements CityService {
 	}
 
 	@Override
-	public City persistir(City city) {
+	public City persist(City city) {
 		log.info("Persistindo cidade: {}", city);
 		return this.cityRepository.save(city);
 	}

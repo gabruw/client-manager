@@ -132,7 +132,7 @@ public class ClientController {
 		client.setCity(city);
 		auth.setClient(client);
 
-		this.authenticationService.persistir(auth);
+		this.authenticationService.persist(auth);
 		response.setData(registerDTO);
 		return ResponseEntity.ok(response);
 	}
@@ -182,7 +182,7 @@ public class ClientController {
 		client.setId(clientOpt.get().getId());
 
 		auth.setClient(client);
-		this.authenticationService.persistir(auth);
+		this.authenticationService.persist(auth);
 		client.getCity().setClients(null);
 
 		response.setData(client);

@@ -37,7 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public Authentication persistir(Authentication authentication) {
+	public Authentication persist(Authentication authentication) {
 		log.info("Persistindo autenticação: {}", authentication);
 		return this.authenticationRepository.save(authentication);
 	}

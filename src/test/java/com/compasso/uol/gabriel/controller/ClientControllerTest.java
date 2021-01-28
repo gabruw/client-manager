@@ -37,9 +37,12 @@ import com.compasso.uol.gabriel.entity.City;
 import com.compasso.uol.gabriel.entity.Client;
 import com.compasso.uol.gabriel.enumerator.GenderEnum;
 import com.compasso.uol.gabriel.enumerator.RoleEnum;
+import com.compasso.uol.gabriel.enumerator.message.ClientMessage;
+import com.compasso.uol.gabriel.response.Error;
 import com.compasso.uol.gabriel.service.AuthenticationService;
 import com.compasso.uol.gabriel.service.CityService;
 import com.compasso.uol.gabriel.service.ClientService;
+import com.compasso.uol.gabriel.utils.Messages;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -149,6 +152,20 @@ public class ClientControllerTest {
 
 	@Test
 	@WithMockUser
+	public void find_client_by_name_with_invalid() throws Exception {
+		when(this.clientService.findByName(NAME)).thenReturn(Optional.of(client));
+
+		final String URL = String.format("%s?name=%s", BASE_URL, "teste");
+		Error error = Messages.getClient(ClientMessage.NONEXISTENT.toString());
+
+		mockMvc.perform(MockMvcRequestBuilders.get(URL)).andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errors[0].title", equalTo(error.getTitle())))
+				.andExpect(jsonPath("$.errors[0].text", equalTo(error.getText())))
+				.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+	@Test
+	@WithMockUser
 	public void include_client() throws Exception {
 		IncludeClientDTO includeClient = mapper.map(client, IncludeClientDTO.class);
 		IncludeAuthenticationDTO includeAuth = mapper.map(auth, IncludeAuthenticationDTO.class);
@@ -158,7 +175,7 @@ public class ClientControllerTest {
 		registerClient.setAuthentication(includeAuth);
 
 		when(this.cityService.findById(ID)).thenReturn(Optional.of(city));
-		when(this.authenticationService.persistir(auth)).thenReturn(auth);
+		when(this.authenticationService.persist(auth)).thenReturn(auth);
 
 		mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL).content(objMapper.writeValueAsString(registerClient))
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
@@ -178,7 +195,7 @@ public class ClientControllerTest {
 		updateClient.setClient(editClient);
 		updateClient.setAuthentication(editAuth);
 
-		when(this.authenticationService.persistir(auth)).thenReturn(auth);
+		when(this.authenticationService.persist(auth)).thenReturn(auth);
 		when(this.cityService.findById(ID)).thenReturn(Optional.of(city));
 		when(this.clientService.findById(ID)).thenReturn(Optional.of(client));
 		when(this.authenticationService.findById(ID)).thenReturn(Optional.of(auth));

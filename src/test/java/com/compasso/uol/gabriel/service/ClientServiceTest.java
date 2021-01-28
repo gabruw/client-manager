@@ -102,7 +102,7 @@ public class ClientServiceTest {
 	public void persist_client() {
 		when(this.clientRepository.save(client)).thenReturn(client);
 
-		Client tClient = this.clientService.persistir(client);
+		Client tClient = this.clientService.persist(client);
 		Assertions.assertEquals(tClient, client);
 	}
 

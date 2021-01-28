@@ -18,7 +18,7 @@ public interface CityService {
 
 	List<OptionDTO<Long>> findOptions();
 
-	City persistir(City city);
+	City persist(City city);
 
 	void deleteById(Long id);
 }

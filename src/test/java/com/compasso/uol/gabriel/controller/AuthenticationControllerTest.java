@@ -28,9 +28,12 @@ import com.compasso.uol.gabriel.entity.City;
 import com.compasso.uol.gabriel.entity.Client;
 import com.compasso.uol.gabriel.enumerator.GenderEnum;
 import com.compasso.uol.gabriel.enumerator.RoleEnum;
+import com.compasso.uol.gabriel.enumerator.message.AuthenticationMessage;
+import com.compasso.uol.gabriel.response.Error;
 import com.compasso.uol.gabriel.service.AuthenticationService;
 import com.compasso.uol.gabriel.service.CityService;
 import com.compasso.uol.gabriel.service.ClientService;
+import com.compasso.uol.gabriel.utils.Messages;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -121,9 +124,47 @@ public class AuthenticationControllerTest {
 	}
 
 	@Test
+	public void login_without_valid_email() throws Exception {
+		client.setId(ID);
+		auth.setEmail("teste_123@etest.com");
+
+		LoginDTO login = mapper.map(auth, LoginDTO.class);
+		Error error = Messages.getAuthentication(AuthenticationMessage.INVALIDEMAIL.toString(), login.getEmail());
+
+		mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL).content(objMapper.writeValueAsString(login))
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isForbidden()).andExpect(jsonPath("$.errors[0].title", equalTo(error.getTitle())))
+				.andExpect(jsonPath("$.errors[0].text", equalTo(error.getText())))
+				.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+	@Test
+	public void login_without_valid_password() throws Exception {
+		client.setId(ID);
+		when(this.clientService.findById(ID)).thenReturn(Optional.of(client));
+
+		String encodedPassword = new BCryptPasswordEncoder().encode(auth.getPassword());
+		auth.setPassword(encodedPassword);
+
+		auth.setClient(client);
+		when(this.authenticationService.findByEmail(EMAIL)).thenReturn(Optional.of(auth));
+
+		auth.setPassword("Iks234#fefk@fek(vemd");
+		LoginDTO login = mapper.map(auth, LoginDTO.class);
+
+		Error error = Messages.getAuthentication(AuthenticationMessage.INVALIDPASSWORD.toString(), login.getEmail());
+
+		mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL).content(objMapper.writeValueAsString(login))
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isForbidden()).andExpect(jsonPath("$.errors[0].title", equalTo(error.getTitle())))
+				.andExpect(jsonPath("$.errors[0].text", equalTo(error.getText())))
+				.andExpect(jsonPath("$.data").isEmpty());
+	}
+
+	@Test
 	@WithMockUser
 	public void refresh_token() throws Exception {
-		when(this.cityService.persistir(city)).thenReturn(city);
+		when(this.cityService.persist(city)).thenReturn(city);
 		when(this.cityService.findById(ID)).thenReturn(Optional.of(city));
 
 		String token = BEARER_PREFIX + "ABCDE";

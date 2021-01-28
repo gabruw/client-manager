@@ -135,7 +135,7 @@ public class CityControllerTest {
 	@Test
 	@WithMockUser
 	public void include_city() throws Exception {
-		when(this.cityService.persistir(city)).thenReturn(city);
+		when(this.cityService.persist(city)).thenReturn(city);
 
 		IncludeCityDTO includeCity = mapper.map(city, IncludeCityDTO.class);
 		mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL).content(objMapper.writeValueAsString(includeCity))
@@ -149,7 +149,7 @@ public class CityControllerTest {
 		city.setId(ID);
 		EditCityDTO editCity = mapper.map(city, EditCityDTO.class);
 
-		when(this.cityService.persistir(city)).thenReturn(city);
+		when(this.cityService.persist(city)).thenReturn(city);
 		when(this.cityService.findById(ID)).thenReturn(Optional.of(city));
 
 		mockMvc.perform(MockMvcRequestBuilders.put(BASE_URL).content(objMapper.writeValueAsString(editCity))

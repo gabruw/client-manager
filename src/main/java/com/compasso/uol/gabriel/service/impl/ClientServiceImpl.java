@@ -46,7 +46,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
-	public Client persistir(Client client) {
+	public Client persist(Client client) {
 		log.info("Persistindo cliente: {}", client);
 		return this.clientRepository.save(client);
 	}

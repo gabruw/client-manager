@@ -11,5 +11,5 @@ public interface AuthenticationService {
 
 	Optional<Authentication> findByEmail(String email);
 
-	Authentication persistir(Authentication authentication);
+	Authentication persist(Authentication authentication);
 }

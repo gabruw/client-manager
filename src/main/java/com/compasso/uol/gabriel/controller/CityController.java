@@ -132,7 +132,7 @@ public class CityController {
 			city = cityOpt.get();
 		} else {
 			city = mapper.map(cityDTO, City.class);
-			this.cityService.persistir(city);
+			this.cityService.persist(city);
 		}
 
 		ReturnCityDTO returnCity = mapper.map(city, ReturnCityDTO.class);
@@ -163,7 +163,7 @@ public class CityController {
 			return ResponseEntity.badRequest().body(response);
 		} else if (cityOpt.isPresent()) {
 			city = mapper.map(cityDTO, City.class);
-			this.cityService.persistir(city);
+			this.cityService.persist(city);
 		} else {
 			city = cityOpt.get();
 		}

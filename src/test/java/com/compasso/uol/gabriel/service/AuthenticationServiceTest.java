@@ -65,7 +65,7 @@ public class AuthenticationServiceTest {
 	public void persist_authentication() {
 		when(this.authenticationRepository.save(auth)).thenReturn(auth);
 
-		Authentication tAuth = this.authenticationService.persistir(auth);
+		Authentication tAuth = this.authenticationService.persist(auth);
 		Assertions.assertEquals(tAuth, auth);
 	}
 

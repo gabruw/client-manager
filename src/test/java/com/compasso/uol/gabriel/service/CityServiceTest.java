@@ -96,7 +96,7 @@ public class CityServiceTest {
 	public void persist_city() {
 		when(this.cityRepository.save(city)).thenReturn(city);
 
-		City tCity = this.cityService.persistir(city);
+		City tCity = this.cityService.persist(city);
 		Assertions.assertEquals(tCity, city);
 	}
 
