@@ -1,7 +1,7 @@
 package com.compasso.uol.gabriel.enumerator.message;
 
 public enum CityMessage {
-	NONEXISTENT("nonexistent"), ALREADYEXISTSNAME("alreadyexists.name");
+	NONEXISTENT("nonexistent");
 
 	private final String text;
 

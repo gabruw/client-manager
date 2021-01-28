@@ -1,7 +1,6 @@
 package com.compasso.uol.gabriel.controller;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +29,6 @@ import com.compasso.uol.gabriel.dto.OptionDTO;
 import com.compasso.uol.gabriel.dto.ReturnCityDTO;
 import com.compasso.uol.gabriel.entity.City;
 import com.compasso.uol.gabriel.enumerator.message.CityMessage;
-import com.compasso.uol.gabriel.enumerator.message.GenericMessage;
 import com.compasso.uol.gabriel.response.Response;
 import com.compasso.uol.gabriel.service.CityService;
 import com.compasso.uol.gabriel.utils.Messages;
@@ -116,10 +114,10 @@ public class CityController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Response<City>> include(@Valid @RequestBody IncludeCityDTO cityDTO, BindingResult result)
-			throws NoSuchAlgorithmException {
+	public ResponseEntity<Response<ReturnCityDTO>> include(@Valid @RequestBody IncludeCityDTO cityDTO,
+			BindingResult result) throws NoSuchAlgorithmException {
 		log.info("Incluindo o cidade: {}", cityDTO.toString());
-		Response<City> response = new Response<City>();
+		Response<ReturnCityDTO> response = new Response<ReturnCityDTO>();
 
 		if (result.hasErrors()) {
 			log.error("Erro validando dados para cadastro da cidade: {}", result.getAllErrors());
@@ -128,18 +126,26 @@ public class CityController {
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		City city = mapper.map(cityDTO, City.class);
-		city = this.cityService.persistir(city);
+		City city = new City();
+		Optional<City> cityOpt = cityService.findByName(cityDTO.getName());
+		if (cityOpt.isPresent()) {
+			city = cityOpt.get();
+		} else {
+			city = mapper.map(cityDTO, City.class);
+			this.cityService.persistir(city);
+		}
 
-		response.setData(city);
+		ReturnCityDTO returnCity = mapper.map(city, ReturnCityDTO.class);
+		response.setData(returnCity);
+
 		return ResponseEntity.ok(response);
 	}
 
 	@PutMapping
-	public ResponseEntity<Response<City>> edit(@Valid @RequestBody EditCityDTO cityDTO, BindingResult result)
+	public ResponseEntity<Response<ReturnCityDTO>> edit(@Valid @RequestBody EditCityDTO cityDTO, BindingResult result)
 			throws NoSuchAlgorithmException {
 		log.info("Editando a cidade: {}", cityDTO.toString());
-		Response<City> response = new Response<City>();
+		Response<ReturnCityDTO> response = new Response<ReturnCityDTO>();
 
 		if (result.hasErrors()) {
 			log.error("Erro validando dados para edição da cidade: {}", result.getAllErrors());
@@ -148,30 +154,44 @@ public class CityController {
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		City city = mapper.map(cityDTO, City.class);
-		city = this.cityService.persistir(city);
+		City city = new City();
+		Optional<City> cityOpt = cityService.findById(cityDTO.getId());
+		if (!cityOpt.isPresent()) {
+			log.info("A autenticação não foi encontrada para o nome: {}", cityDTO.getId());
+			response.addError(Messages.getCity(CityMessage.NONEXISTENT.toString()));
 
-		response.setData(city);
+			return ResponseEntity.badRequest().body(response);
+		} else if (cityOpt.isPresent()) {
+			city = mapper.map(cityDTO, City.class);
+			this.cityService.persistir(city);
+		} else {
+			city = cityOpt.get();
+		}
+
+		ReturnCityDTO returnCity = mapper.map(city, ReturnCityDTO.class);
+		response.setData(returnCity);
+
 		return ResponseEntity.ok(response);
 	}
 
 	@DeleteMapping
-	public ResponseEntity<Response<City>> remove(@RequestParam("id") Long id) throws NoSuchAlgorithmException {
+	public ResponseEntity<Response<ReturnCityDTO>> remove(@RequestParam("id") Long id) throws NoSuchAlgorithmException {
 		log.info("Removendo a cidade: {}", id);
-		Response<City> response = new Response<City>();
+		Response<ReturnCityDTO> response = new Response<ReturnCityDTO>();
 
 		Optional<City> cityOpt = this.cityService.findById(id);
 		if (!cityOpt.isPresent()) {
 			log.info("A autenticação não foi encontrada para o nome: {}", id);
-			response.addError(Messages.getClient(GenericMessage.NONEXISTENT.toString(), id));
+			response.addError(Messages.getCity(CityMessage.NONEXISTENT.toString()));
 
 			return ResponseEntity.badRequest().body(response);
 		}
 
 		this.cityService.deleteById(id);
-		cityOpt.get().setClients(Collections.emptyList());
 
-		response.setData(cityOpt.get());
+		ReturnCityDTO returnCity = mapper.map(cityOpt.get(), ReturnCityDTO.class);
+		response.setData(returnCity);
+
 		return ResponseEntity.ok(response);
 	}
 }
