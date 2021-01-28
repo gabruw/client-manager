@@ -47,7 +47,7 @@ public class CityServiceTest {
 	}
 
 	@Test
-	public void findAll() {
+	public void find_all_cities() {
 		List<City> cities = new ArrayList<City>();
 		cities.add(city);
 
@@ -58,7 +58,7 @@ public class CityServiceTest {
 	}
 
 	@Test
-	public void findById() {
+	public void find_city_by_id() {
 		when(this.cityRepository.findById(ID)).thenReturn(Optional.of(city));
 
 		Optional<City> tCity = this.cityService.findById(ID);
@@ -66,7 +66,7 @@ public class CityServiceTest {
 	}
 
 	@Test
-	public void findByName() {
+	public void find_city_by_name() {
 		when(this.cityRepository.findByName(NAME)).thenReturn(Optional.of(city));
 
 		Optional<City> tCity = this.cityService.findByName(NAME);
@@ -74,7 +74,7 @@ public class CityServiceTest {
 	}
 
 	@Test
-	public void findByState() {
+	public void find_city_by_state() {
 		when(this.cityRepository.findByState(STATE)).thenReturn(Optional.of(city));
 
 		Optional<City> tCity = this.cityService.findByState(STATE);
@@ -82,7 +82,7 @@ public class CityServiceTest {
 	}
 
 	@Test
-	public void findOptions() {
+	public void find_cities_options() {
 		List<City> cities = new ArrayList<City>();
 		cities.add(city);
 
@@ -93,7 +93,7 @@ public class CityServiceTest {
 	}
 
 	@Test
-	public void persist() {
+	public void persist_city() {
 		when(this.cityRepository.save(city)).thenReturn(city);
 
 		City tCity = this.cityService.persistir(city);
@@ -101,7 +101,7 @@ public class CityServiceTest {
 	}
 
 	@Test
-	public void delete() {
+	public void delete_city() {
 		when(this.cityRepository.findById(ID)).thenReturn(Optional.of(city));
 
 		this.cityService.deleteById(ID);

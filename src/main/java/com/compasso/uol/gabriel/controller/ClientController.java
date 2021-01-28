@@ -72,26 +72,6 @@ public class ClientController {
 	}
 
 	@Cacheable("client")
-	@RequestMapping(params = "id", method = RequestMethod.GET)
-	public ResponseEntity<Response<ReturnClientDTO>> findId(@RequestParam Long id) throws NoSuchAlgorithmException {
-		log.info("Buscando o cliente com o Id: {}", id);
-		Response<ReturnClientDTO> response = new Response<ReturnClientDTO>();
-
-		Optional<Client> clientOpt = clientService.findById(id);
-		if (!clientOpt.isPresent()) {
-			log.error("Erro ao validar o Id: {}", id);
-			response.addError(Messages.getClient(ClientMessage.NONEXISTENT.toString()));
-
-			return ResponseEntity.badRequest().body(response);
-		}
-
-		ReturnClientDTO client = mapper.map(clientOpt.get(), ReturnClientDTO.class);
-		response.setData(client);
-
-		return ResponseEntity.ok(response);
-	}
-
-	@Cacheable("client")
 	@RequestMapping(params = "name", method = RequestMethod.GET)
 	public ResponseEntity<Response<ReturnClientDTO>> findName(@RequestParam String name)
 			throws NoSuchAlgorithmException {
@@ -173,7 +153,7 @@ public class ClientController {
 		Optional<Authentication> authOpt = this.authenticationService.findById(updateDTO.getAuthentication().getId());
 		if (!authOpt.isPresent()) {
 			log.error("Erro ao validar o Id da autenticação: {}", updateDTO.getAuthentication().getId());
-			response.addError(Messages.getAuthentication(AuthenticationMessage.ALREADYEXISTSEMAIL.toString()));
+			response.addError(Messages.getAuthentication(AuthenticationMessage.NONEXISTENT.toString()));
 
 			return ResponseEntity.badRequest().body(response);
 		}

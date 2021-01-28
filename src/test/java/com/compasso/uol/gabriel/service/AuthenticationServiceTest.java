@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.compasso.uol.gabriel.entity.Authentication;
+import com.compasso.uol.gabriel.enumerator.RoleEnum;
 import com.compasso.uol.gabriel.repository.AuthenticationRepository;
 
 @SpringBootTest
@@ -32,18 +33,20 @@ public class AuthenticationServiceTest {
 	private Authentication auth;
 
 	private static final Long ID = 1L;
-	private static final String EMAIL = "genisvaldo@test.com";
+	private static final RoleEnum ROLE = RoleEnum.USER;
 	private static final String PASSWORD = "teste@123";
+	private static final String EMAIL = "genisvaldo@test.com";
 
 	@BeforeEach
 	public void setup() {
 		auth = new Authentication();
+		auth.setRole(ROLE);
 		auth.setEmail(EMAIL);
 		auth.setPassword(PASSWORD);
 	}
 
 	@Test
-	public void findById() {
+	public void find_authentication_by_id() {
 		when(this.authenticationRepository.findById(ID)).thenReturn(Optional.of(auth));
 
 		Optional<Authentication> tAuth = this.authenticationService.findById(ID);
@@ -51,7 +54,7 @@ public class AuthenticationServiceTest {
 	}
 
 	@Test
-	public void findByEmail() {
+	public void find_authentication_by_email() {
 		when(this.authenticationRepository.findByEmail(EMAIL)).thenReturn(Optional.of(auth));
 
 		Optional<Authentication> tAuth = this.authenticationService.findByEmail(EMAIL);
@@ -59,7 +62,7 @@ public class AuthenticationServiceTest {
 	}
 
 	@Test
-	public void persist() {
+	public void persist_authentication() {
 		when(this.authenticationRepository.save(auth)).thenReturn(auth);
 
 		Authentication tAuth = this.authenticationService.persistir(auth);
@@ -67,7 +70,7 @@ public class AuthenticationServiceTest {
 	}
 
 	@Test
-	public void delete() {
+	public void delete_authentication() {
 		when(this.authenticationRepository.findById(ID)).thenReturn(Optional.of(auth));
 
 		this.authenticationService.deleteById(ID);

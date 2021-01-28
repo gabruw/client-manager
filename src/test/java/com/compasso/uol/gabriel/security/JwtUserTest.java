@@ -27,7 +27,7 @@ public class JwtUserTest {
 	}
 
 	@Test
-	public void authenticationToJwtUser() {
+	public void authentication_to_jwtUser() {
 		Authentication auth = new Authentication();
 		auth.setId(ID);
 		auth.setRole(ROLE);
@@ -41,22 +41,22 @@ public class JwtUserTest {
 	}
 
 	@Test
-	public void isEnabled() {
+	public void is_enabled() {
 		Assertions.assertTrue(user.isEnabled());
 	}
 
 	@Test
-	public void isAccountNonLocked() {
+	public void is_account_non_locked() {
 		Assertions.assertTrue(user.isAccountNonLocked());
 	}
 
 	@Test
-	public void isAccountNonExpired() {
+	public void is_account_non_expired() {
 		Assertions.assertTrue(user.isAccountNonExpired());
 	}
 
 	@Test
-	public void isCredentialsNonExpired() {
+	public void is_credentials_non_expired() {
 		Assertions.assertTrue(user.isCredentialsNonExpired());
 	}
 }

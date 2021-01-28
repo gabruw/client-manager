@@ -10,7 +10,7 @@ public class ResponseTest {
 	private static final String FIELD_ERROR = "Field error";
 
 	@Test
-	public void addError() {
+	public void add_error() {
 		Error error = new Error(ERROR_TEXT, ERROR_TITLE);
 
 		Response<Long> response = new Response<Long>();
@@ -20,7 +20,7 @@ public class ResponseTest {
 	}
 
 	@Test
-	public void addFieldError() {
+	public void add_field_error() {
 		Response<Long> response = new Response<Long>();
 		response.addFieldError(FIELD_ERROR);
 
@@ -28,7 +28,7 @@ public class ResponseTest {
 	}
 
 	@Test
-	public void getErrors() {
+	public void get_errors() {
 		Response<Long> response = new Response<Long>();
 		response.addFieldError(FIELD_ERROR);
 
