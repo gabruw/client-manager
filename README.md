@@ -133,7 +133,14 @@ java -jar <nome do arquivo .jar>
 
 ### Consultas
 
-Além da documentação com Swagger, uma versão para o Postman pode ser encontrada através do arquivo **"postman_collection.json"** na pasta do projeto ou através do endereço abaixo:
+#### Swagger
+A documentação dos endpoints através do **Swagger** pode ser encontrado através do endereço: 
+```
+/swagger-ui.html
+```
+
+#### Postman
+Além da documentação com Swagger, uma versão para o **Postman** pode ser encontrada através do arquivo **"postman_collection.json"** na pasta do projeto ou através do endereço abaixo:
 ```
 https://www.postman.com/collections/3c1f6bd6b7caa866fed1
 ```
